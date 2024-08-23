@@ -1,0 +1,26 @@
+# Node.js dependencies
+node_modules/
+
+# Environment variables
+.env
+
+# SSL keys and certificates
+server.key
+server.cert
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Editor de código
+.vscode/
+.idea/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Builds y distribuciones
+dist/
+build/
