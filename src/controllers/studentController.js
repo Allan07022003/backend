@@ -1,5 +1,83 @@
 const studentService = require('../service/studentService');
+const { check, validationResult } = require('express-validator');
+const jwt = require('jsonwebtoken');
 
+// Registro de estudiante
+const registerStudent = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    let student = await studentService.findStudentByEmail(email);
+    if (student) {
+      return res.status(400).json({ message: 'El correo electrónico ya está registrado' });
+    }
+
+    const hashedPassword = await studentService.hashPassword(password);
+
+    student = await studentService.createStudent({ email, password: hashedPassword });
+    res.status(201).json({ message: 'Registro exitoso', student });
+  } catch (error) {
+    res.status(500).json({ message: 'Error en el registro: ' + error.message });
+  }
+};
+
+// Inicio de sesión de estudiante
+const loginStudent = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const student = await studentService.findStudentByEmail(email);
+    if (!student) {
+      return res.status(400).json({ message: 'Credenciales incorrectas' });
+    }
+
+    const isMatch = await studentService.verifyPassword(password, student.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Credenciales incorrectas' });
+    }
+
+    // Generar un token JWT
+    const token = jwt.sign({ id: student._id }, process.env.JWT_SECRET, {
+      expiresIn: '1h',
+    });
+
+    res.status(200).json({ message: 'Login exitoso', token });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Completar el perfil del estudiante
+const completeStudentProfile = async (req, res) => {
+  try {
+    const { name, age, grade } = req.body;
+    const student = await studentService.findStudentById(req.user.id); // Obtiene el estudiante autenticado
+
+    if (!student) {
+      return res.status(404).json({ message: 'Estudiante no encontrado' });
+    }
+
+    // Asignación automática de un maestro según el grado
+    let teacher;
+    if (grade === '2nd Grade') {
+      teacher = await studentService.findTeacherByGrade('2nd Grade');
+    }
+
+    // Completar el perfil del estudiante
+    student.name = name || student.name;
+    student.age = age || student.age;
+    student.grade = grade || student.grade;
+    student.registeredBy = teacher ? teacher._id : student.registeredBy;
+
+    await student.save();
+
+    res.status(200).json({ message: 'Perfil completado con éxito', student });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al completar el perfil: ' + error.message });
+  }
+};
+
+// Otras funciones del controlador
 const createStudent = async (req, res) => {
   try {
     const student = await studentService.createStudent(req.body);
@@ -37,8 +115,11 @@ const deleteStudent = async (req, res) => {
 };
 
 module.exports = {
-  createStudent,
+  registerStudent,
+  loginStudent,
+  completeStudentProfile,
   getStudents,
+  createStudent,
   updateStudent,
   deleteStudent,
 };

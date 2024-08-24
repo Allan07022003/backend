@@ -1,28 +1,32 @@
 const jwt = require('jsonwebtoken');
+const Student = require('../models/students');
 
-const protect = (req, res, next) => {
+const protect = async (req, res, next) => {
   let token;
 
-  // Verifica si el token está en el header Authorization
   if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
     try {
-      // Extrae el token
       token = req.headers.authorization.split(' ')[1];
-
-      // Verifica y decodifica el token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      // Agrega el ID del usuario decodificado al request
-      req.user = decoded.id;
+      // Busca al estudiante en la base de datos
+      const student = await Student.findById(decoded.id).select('-password'); // Excluye la contraseña
 
-      next(); // Pasa al siguiente middleware o controlador
+      if (!student) {
+        return res.status(404).json({ message: 'Estudiante no encontrado' });
+      }
+
+      req.user = student; // Asigna toda la información del estudiante al request
+
+      next(); // Continua al siguiente middleware o controlador
     } catch (error) {
+      console.error(error);
       res.status(401).json({ message: 'Token no válido' });
     }
   }
 
   if (!token) {
-    res.status(401).json({ message: 'No se proporcionó un token' });
+    return res.status(401).json({ message: 'No se proporcionó un token' });
   }
 };
 

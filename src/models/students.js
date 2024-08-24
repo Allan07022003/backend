@@ -1,29 +1,39 @@
 const mongoose = require('mongoose');
+const argon2 = require('argon2');
 
 const StudentSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'El nombre es obligatorio'],
+    required: false, // Cambiado a no obligatorio
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
   },
   age: {
     type: Number,
-    required: [true, 'La edad es obligatoria'],
     min: [6, 'La edad mínima es 6 años'],
+    required: false, // Cambiado a no obligatorio
   },
   grade: {
     type: String,
-    required: [true, 'El grado es obligatorio'],
-  },
-  progress: {
-    type: Map, // Almacena el progreso por curso, clave-valor
-    of: Number,
-    default: {},
+    required: false, // Cambiado a no obligatorio
   },
   registeredBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Teacher',
-    required: true,
+    required: false, // Cambiado a no obligatorio
   },
 }, { timestamps: true });
+
+// Método para comparar contraseñas
+StudentSchema.methods.matchPassword = async function(enteredPassword) {
+  return await argon2.verify(this.password, enteredPassword);
+};
 
 module.exports = mongoose.model('Student', StudentSchema);
