@@ -1,20 +1,10 @@
-const fs = require('fs');
-const https = require('https');
 const express = require('express');
 const connectDB = require('./config/db');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
-const path = require('path');
-
 require('dotenv').config();
 
 const app = express();
-
-// Opciones SSL
-const sslOptions = {
-  key: fs.readFileSync(path.join(__dirname, '../server.key')),
-  cert: fs.readFileSync(path.join(__dirname, '../server.cert')),
-};
 
 // Configurar el limitador de tasa antes de las rutas
 const limiter = rateLimit({
@@ -41,7 +31,8 @@ app.get('/', (req, res) => {
   res.send('¡Bienvenido al backend Montessori!');
 });
 
-// Iniciar el servidor HTTPS
-https.createServer(sslOptions, app).listen(5000, () => {
-  console.log('Servidor HTTPS corriendo en https://localhost:5000');
+// Iniciar el servidor
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en el puerto ${PORT}`);
 });
