@@ -12,7 +12,7 @@ const registerTeacherWithToken = async (req, res) => {
 
 const generateTokenForTeacherRegistration = async (req, res) => {
   try {
-    const { email } = req.body; // Asegúrate de que el email sea enviado en el cuerpo de la solicitud
+    const { email } = req.body; 
     const token = await authService.generateTokenForTeacherRegistration(email);
     res.status(201).json({ message: 'Token generado y enviado al correo', token });
   } catch (error) {

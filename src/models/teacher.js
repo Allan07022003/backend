@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
-const argon2 = require('argon2'); // Asegúrate de haber instalado argon2
-
+const argon2 = require('argon2'); 
 const TeacherSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -36,7 +35,7 @@ TeacherSchema.pre('save', async function(next) {
     return next();
   }
   try {
-    this.password = await argon2.hash(this.password.trim()); // Usa argon2 para hashear la contraseña
+    this.password = await argon2.hash(this.password.trim()); 
     next();
   } catch (err) {
     next(err);
@@ -47,10 +46,6 @@ TeacherSchema.pre('save', async function(next) {
 TeacherSchema.methods.matchPassword = async function(enteredPassword) {
   const isMatch = await argon2.verify(this.password, enteredPassword.trim()); // Compara con argon2
 
-  // Logs para depurar
-  console.log('Contraseña ingresada:', enteredPassword);
-  console.log('Contraseña almacenada:', this.password);
-  console.log('¿Las contraseñas coinciden?', isMatch);
 
   return isMatch;
 };

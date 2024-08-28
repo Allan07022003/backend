@@ -4,7 +4,7 @@ const argon2 = require('argon2');
 const StudentSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: false, // Cambiado a no obligatorio
+    required: false, 
   },
   email: {
     type: String,
@@ -18,16 +18,16 @@ const StudentSchema = new mongoose.Schema({
   age: {
     type: Number,
     min: [6, 'La edad mínima es 6 años'],
-    required: false, // Cambiado a no obligatorio
+    required: false, 
   },
   grade: {
     type: String,
-    required: false, // Cambiado a no obligatorio
+    required: false, 
   },
   registeredBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Teacher',
-    required: false, // Cambiado a no obligatorio
+    required: false, 
   },
 }, { timestamps: true });
 

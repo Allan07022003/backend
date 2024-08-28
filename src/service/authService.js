@@ -16,7 +16,7 @@ class AuthService {
 
     const teacher = new Teacher({
       name,
-      email: validToken.email.trim(), // Limpia el email antes de guardarlo
+      email: validToken.email.trim(),
       password: password.trim(), // El modelo lo hasheará automáticamente
       grade,
       isTemporaryPassword: false,
@@ -36,9 +36,9 @@ class AuthService {
     const transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
       port: 465,
-      secure: true, // true para SSL
+      secure: true, // SSL
       auth: {
-        user: process.env.EMAIL_USER,
+        user: process.env.EMAIL_USER,// se inyectan las credenciales desde el .env
         pass: process.env.EMAIL_PASS,
       },
       tls: {
@@ -50,7 +50,7 @@ class AuthService {
       from: process.env.EMAIL_USER,
       to: email.trim(),
       subject: 'Invitación para unirse como profesor',
-      text: `Use este enlace para registrarse: https://tu-dominio.com/register?token=${token}`,
+      text: `Use este enlace para registrarse: https://ejemplo/register?token=${token}`,
     };
 
     try {
@@ -73,7 +73,7 @@ class AuthService {
       throw new Error('Credenciales incorrectas');
     }
 
-    const isMatch = await teacher.matchPassword(password); // Comparación con argon2
+    const isMatch = await teacher.matchPassword(password); 
     if (!isMatch) {
       throw new Error('Credenciales incorrectas');
     }

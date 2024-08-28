@@ -63,7 +63,7 @@ const completeStudentProfile = async (req, res) => {
       teacher = await studentService.findTeacherByGrade('2nd Grade');
     }
 
-    // Completar el perfil del estudiante
+    // Completar el perfil del estudiante despues del inicio de sesion 
     student.name = name || student.name;
     student.age = age || student.age;
     student.grade = grade || student.grade;
