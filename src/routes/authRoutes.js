@@ -10,7 +10,7 @@ const {
 const router = express.Router();
 
 // Ruta para el login unificado
-router.post('/login', login);
+router.post('/login', loginUnificado);
 
 // Ruta para registrar un profesor utilizando un token de invitación
 router.post('/register', registerTeacherWithToken);

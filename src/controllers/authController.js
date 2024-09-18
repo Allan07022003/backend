@@ -13,52 +13,36 @@ const generateToken = (id) => {
   });
 };
 
-// Controlador unificado para el inicio de sesión de estudiantes y profesores
-const login = async (req, res) => {
+const loginUnificado = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Primero intenta autenticar al usuario como estudiante
+    // Primero intentamos buscar al estudiante
     let user = await Student.findOne({ email });
 
-    if (user && (await bcrypt.compare(password, user.password))) {
-      // Si el usuario es un estudiante, generar token y redirigir al dashboard de estudiantes
-      const token = generateToken(user._id);
-      res.cookie('jwt', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 días
-      });
-      return res.json({
-        _id: user._id,
-        email: user.email,
-        role: 'student',
-        token,
-      });
+    if (user) {
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (isMatch) {
+        const token = generateToken(user._id);
+        return res.status(200).json({ token, role: 'student' });
+      }
     }
 
-    // Si no es estudiante, intenta autenticar como profesor
+    // Si no es un estudiante, intentamos con los profesores
     user = await Teacher.findOne({ email });
-    if (user && (await bcrypt.compare(password, user.password))) {
-      // Si el usuario es un profesor, generar token y redirigir al panel de administración
-      const token = generateToken(user._id);
-      res.cookie('jwt', token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 días
-      });
-      return res.json({
-        _id: user._id,
-        email: user.email,
-        role: 'teacher',
-        token,
-      });
+    if (user) {
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (isMatch) {
+        const token = generateToken(user._id);
+        return res.status(200).json({ token, role: 'teacher' });
+      }
     }
 
-    // Si no se encuentra ni en estudiantes ni en profesores
-    res.status(401).json({ message: 'Credenciales incorrectas' });
+    // Si no se encontró en ninguna colección o las contraseñas no coinciden
+    return res.status(401).json({ message: 'Credenciales incorrectas' });
   } catch (error) {
-    res.status(500).json({ message: 'Error en el servidor: ' + error.message });
+    console.error('Error en el inicio de sesión:', error);
+    res.status(500).json({ message: 'Error en el servidor' });
   }
 };
 

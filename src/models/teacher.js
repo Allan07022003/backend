@@ -20,6 +20,10 @@ const TeacherSchema = new mongoose.Schema({
     enum: ['2nd Grade', '3rd Grade', '4th Grade'],
     required: true,
   },
+  role: {
+    type: String,
+    default: 'teacher', // Asignamos el rol de profesor
+  },
   isTemporaryPassword: {
     type: Boolean,
     default: false,

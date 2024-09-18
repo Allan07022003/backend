@@ -5,7 +5,7 @@ const protectTeacher = require('../middleware/authTeacherMiddleware'); // Middle
 const router = express.Router();
 
 // Panel de administración - Ruta protegida
-router.get('/admin-dashboard', protectTeacher, (req, res) => {
+router.get('/adminDashboard', protectTeacher, (req, res) => {
   // Lógica adicional si es necesario
   res.status(200).json({
     message: `Bienvenido al panel de administración, Profesor ${req.user.name}`,
