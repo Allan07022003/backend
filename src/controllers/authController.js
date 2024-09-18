@@ -151,9 +151,11 @@ const changeTemporaryPassword = async (req, res) => {
 
 // Exportar todas las funciones necesarias
 module.exports = {
-  login, // Ruta unificada para login de estudiantes y profesores
+  loginUnificado,
   registerTeacherWithToken,
   verifyToken,
   generateTokenForTeacherRegistration,
   changeTemporaryPassword,
+ 
 };
+

@@ -1,6 +1,6 @@
 const express = require('express');
 const { 
-  login, // Ruta unificada para el login
+  loginUnificado,
   registerTeacherWithToken, 
   verifyToken, 
   generateTokenForTeacherRegistration, 
