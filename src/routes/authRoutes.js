@@ -1,7 +1,7 @@
 const express = require('express');
 const { 
   registerTeacherWithToken, 
-  login, 
+  loginTeacher, 
   verifyToken, 
   generateTokenForTeacherRegistration, 
   changeTemporaryPassword 
@@ -13,7 +13,7 @@ const router = express.Router();
 router.post('/register', registerTeacherWithToken);
 
 // Ruta para iniciar sesión como profesor
-router.post('/login', login);
+router.post('/login', loginTeacher);
 
 // Ruta para verificar un token JWT
 router.get('/verify', verifyToken);

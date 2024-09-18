@@ -105,6 +105,7 @@ const updateStudent = async (req, res) => {
   }
 };
 
+
 const deleteStudent = async (req, res) => {
   try {
     await studentService.deleteStudent(req.params.id);
@@ -123,3 +124,4 @@ module.exports = {
   updateStudent,
   deleteStudent,
 };
+

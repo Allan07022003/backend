@@ -9,7 +9,8 @@ const {
   updateStudent,
   deleteStudent,
 } = require('../controllers/studentController');
-const protect = require('../middleware/authMiddleware');
+const Student = require('../models/students');
+const { protect } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
@@ -46,34 +47,17 @@ router.get('/students-with-teacher', protect, async (req, res) => {
   }
 });
 
-// Otras rutas protegidas para crear, obtener, actualizar y eliminar estudiantes
-router.post(
-  '/',
-  protect,
-  [
-    check('name', 'El nombre es obligatorio').not().isEmpty(),
-    check('age', 'La edad debe ser un número válido').isInt({ min: 6, max: 12 }),
-  ],
-  (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-    next();
-  },
-  createStudent
-);
+// Crear un nuevo estudiante (requiere autenticación)
+router.post('/create', protect, createStudent);
 
+// Obtener todos los estudiantes (requiere autenticación)
 router.get('/', protect, getStudents);
-router.put('/:id', protect, updateStudent);
-router.delete('/:id', protect, deleteStudent);
 
-// Ruta protegida del dashboard del estudiante
-router.get('/dashboard', protect, (req, res) => {
-  res.status(200).json({
-    message: `Bienvenido al dashboard del estudiante, ${req.user.name}`,
-    student: req.user, // Se envía la información del usuario autenticado (estudiante)
-  });
-});
+console.log(typeof updateStudent);  // Esto debería mostrar 'function' en la consola
+
+router.put('/:id', protect, updateStudent);
+
+// Eliminar un estudiante (requiere autenticación)
+router.delete('/:id', protect, deleteStudent);
 
 module.exports = router;
