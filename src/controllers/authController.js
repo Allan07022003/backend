@@ -36,8 +36,11 @@ const loginUnificado = async (req, res) => {
     user = await Teacher.findOne({ email });
     if (user) {
       console.log("Profesor encontrado:", user.email);
-      const isMatch = await user.matchPassword(password);
-      console.log("Comparación de contraseñas para profesor:", isMatch);
+const isMatch = await user.matchPassword(password);
+console.log("Contraseña ingresada:", password);
+console.log("Contraseña hasheada en DB:", user.password);
+console.log("Resultado de la comparación:", isMatch);
+
       if (isMatch) {
         const token = generateToken(user._id);
         console.log("Profesor autenticado:", user.email);
@@ -45,6 +48,7 @@ const loginUnificado = async (req, res) => {
       } else {
         console.log("Contraseña incorrecta para profesor");
       }
+      
     }
 
     console.log('Credenciales incorrectas para', email);

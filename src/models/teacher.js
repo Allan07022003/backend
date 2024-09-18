@@ -45,8 +45,15 @@ TeacherSchema.pre('save', async function (next) {
 });
 
 // Método para comparar contraseñas
+// teacher model
 TeacherSchema.methods.matchPassword = async function (enteredPassword) {
-  return await argon2.verify(this.password, enteredPassword);
+  try {
+    return await argon2.verify(this.password, enteredPassword);
+  } catch (error) {
+    console.error("Error al verificar la contraseña:", error);
+    return false;
+  }
 };
+
 
 module.exports = mongoose.model('Teacher', TeacherSchema);
