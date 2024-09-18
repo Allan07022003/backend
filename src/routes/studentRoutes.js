@@ -46,8 +46,7 @@ router.get('/students-with-teacher', protect, async (req, res) => {
   }
 });
 
-
-// Otras rutas
+// Otras rutas protegidas para crear, obtener, actualizar y eliminar estudiantes
 router.post(
   '/',
   protect,
@@ -68,5 +67,13 @@ router.post(
 router.get('/', protect, getStudents);
 router.put('/:id', protect, updateStudent);
 router.delete('/:id', protect, deleteStudent);
+
+// Ruta protegida del dashboard del estudiante
+router.get('/dashboard', protect, (req, res) => {
+  res.status(200).json({
+    message: `Bienvenido al dashboard del estudiante, ${req.user.name}`,
+    student: req.user, // Se envía la información del usuario autenticado (estudiante)
+  });
+});
 
 module.exports = router;

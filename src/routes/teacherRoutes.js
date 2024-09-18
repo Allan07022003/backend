@@ -1,13 +1,20 @@
 const express = require('express');
 const { getStudentsByTeacher, getStudentProgress } = require('../controllers/teacherController');
-const protect = require('../middleware/authMiddleware');
+const protectTeacher = require('../middleware/authTeacherMiddleware'); // Middleware de autenticación para profesores
 
 const router = express.Router();
 
-// Obtener estudiantes asignados al maestro
-router.get('/students', protect, getStudentsByTeacher);
+// Panel de administración - Ruta protegida
+router.get('/admin-dashboard', protectTeacher, (req, res) => {
+  // Lógica adicional si es necesario
+  res.status(200).json({
+    message: `Bienvenido al panel de administración, Profesor ${req.user.name}`,
+    teacher: req.user, // Información del profesor autenticado
+  });
+});
 
-// Obtener el progreso de un estudiante específico
-router.get('/students/:studentId/progress', protect, getStudentProgress);
+// Otras rutas para los profesores
+router.get('/students', protectTeacher, getStudentsByTeacher);
+router.get('/students/:studentId/progress', protectTeacher, getStudentProgress);
 
 module.exports = router;
