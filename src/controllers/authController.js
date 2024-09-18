@@ -21,7 +21,8 @@ const loginUnificado = async (req, res) => {
     let user = await Student.findOne({ email });
     if (user) {
       console.log("Estudiante encontrado:", user.email);
-      const isMatch = await user.matchPassword(password);  // Verificar la contraseña
+      const isMatch = await user.matchPassword(password);
+      console.log("Comparación de contraseñas para estudiante:", isMatch);
       if (isMatch) {
         const token = generateToken(user._id);
         console.log("Estudiante autenticado:", user.email);
@@ -35,7 +36,8 @@ const loginUnificado = async (req, res) => {
     user = await Teacher.findOne({ email });
     if (user) {
       console.log("Profesor encontrado:", user.email);
-      const isMatch = await user.matchPassword(password);  // Verificar la contraseña
+      const isMatch = await user.matchPassword(password);
+      console.log("Comparación de contraseñas para profesor:", isMatch);
       if (isMatch) {
         const token = generateToken(user._id);
         console.log("Profesor autenticado:", user.email);
