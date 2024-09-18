@@ -17,29 +17,33 @@ const loginUnificado = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Primero intentamos buscar al estudiante
+    // Buscar primero al estudiante
     let user = await Student.findOne({ email });
 
     if (user) {
-      const isMatch = await bcrypt.compare(password, user.password);
+      const isMatch = await bcrypt.compare(password, user.password); // Verifica la contraseña
       if (isMatch) {
         const token = generateToken(user._id);
         return res.status(200).json({ token, role: 'student' });
+      } else {
+        return res.status(401).json({ message: 'Credenciales incorrectas' });
       }
     }
 
-    // Si no es un estudiante, intentamos con los profesores
+    // Si no es un estudiante, buscar al profesor
     user = await Teacher.findOne({ email });
     if (user) {
-      const isMatch = await bcrypt.compare(password, user.password);
+      const isMatch = await bcrypt.compare(password, user.password); // Verifica la contraseña
       if (isMatch) {
         const token = generateToken(user._id);
         return res.status(200).json({ token, role: 'teacher' });
+      } else {
+        return res.status(401).json({ message: 'Credenciales incorrectas' });
       }
     }
 
-    // Si no se encontró en ninguna colección o las contraseñas no coinciden
-    return res.status(401).json({ message: 'Credenciales incorrectas' });
+    // Si no se encontró el usuario en ninguna colección
+    return res.status(404).json({ message: 'Usuario no encontrado' });
   } catch (error) {
     console.error('Error en el inicio de sesión:', error);
     res.status(500).json({ message: 'Error en el servidor' });
