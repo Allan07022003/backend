@@ -13,53 +13,52 @@ const generateToken = (id) => {
   });
 };
 
-// Controlador para el inicio de sesión de estudiantes
-const loginStudent = async (req, res) => {
+// Controlador unificado para el inicio de sesión de estudiantes y profesores
+const login = async (req, res) => {
   const { email, password } = req.body;
 
-  const student = await Student.findOne({ email });
+  try {
+    // Primero intenta autenticar al usuario como estudiante
+    let user = await Student.findOne({ email });
 
-  if (student && (await bcrypt.compare(password, student.password))) {
-    res.cookie('jwt', generateToken(student._id), {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 días
-    });
+    if (user && (await bcrypt.compare(password, user.password))) {
+      // Si el usuario es un estudiante, generar token y redirigir al dashboard de estudiantes
+      const token = generateToken(user._id);
+      res.cookie('jwt', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 días
+      });
+      return res.json({
+        _id: user._id,
+        email: user.email,
+        role: 'student',
+        token,
+      });
+    }
 
-    res.json({
-      _id: student._id,
-      email: student.email,
-      token: generateToken(student._id),
-    });
-  } else {
+    // Si no es estudiante, intenta autenticar como profesor
+    user = await Teacher.findOne({ email });
+    if (user && (await bcrypt.compare(password, user.password))) {
+      // Si el usuario es un profesor, generar token y redirigir al panel de administración
+      const token = generateToken(user._id);
+      res.cookie('jwt', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 días
+      });
+      return res.json({
+        _id: user._id,
+        email: user.email,
+        role: 'teacher',
+        token,
+      });
+    }
+
+    // Si no se encuentra ni en estudiantes ni en profesores
     res.status(401).json({ message: 'Credenciales incorrectas' });
-  }
-};
-
-// Controlador para el inicio de sesión de profesores
-const loginTeacher = async (req, res) => {
-  const { email, password } = req.body;
-
-  const teacher = await Teacher.findOne({ email });
-
-  if (teacher && (await bcrypt.compare(password, teacher.password))) {
-    const token = generateToken(teacher._id);
-
-    // Enviar el token en una cookie
-    res.cookie('jwt', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 días
-    });
-
-    res.json({
-      _id: teacher._id,
-      email: teacher.email,
-      role: 'teacher',
-      token,
-    });
-  } else {
-    res.status(401).json({ message: 'Credenciales incorrectas' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error en el servidor: ' + error.message });
   }
 };
 
@@ -119,10 +118,10 @@ const generateTokenForTeacherRegistration = async (req, res) => {
   // Generar un token único
   const token = crypto.randomBytes(32).toString('hex');
   const newToken = new Token({ token, email });
-  
+
   try {
     await newToken.save(); // Almacenar el token y el email en la colección Token
-    
+
     // Configuración de nodemailer para enviar el correo
     const transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
@@ -168,8 +167,7 @@ const changeTemporaryPassword = async (req, res) => {
 
 // Exportar todas las funciones necesarias
 module.exports = {
-  loginStudent,
-  loginTeacher,
+  login, // Ruta unificada para login de estudiantes y profesores
   registerTeacherWithToken,
   verifyToken,
   generateTokenForTeacherRegistration,

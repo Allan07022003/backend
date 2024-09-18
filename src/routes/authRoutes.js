@@ -1,23 +1,27 @@
 const express = require('express');
 const { 
+  login, // Ruta unificada para el login
   registerTeacherWithToken, 
-  loginTeacher, 
-  generateTokenForTeacherRegistration,
-  verifyToken // Asegúrate de que esta función esté exportada correctamente en authController.js
+  verifyToken, 
+  generateTokenForTeacherRegistration, 
+  changeTemporaryPassword 
 } = require('../controllers/authController');
 
 const router = express.Router();
 
+// Ruta para el login unificado
+router.post('/login', login);
+
 // Ruta para registrar un profesor utilizando un token de invitación
 router.post('/register', registerTeacherWithToken);
 
-// Ruta para iniciar sesión como profesor
-router.post('/login', loginTeacher);
+// Ruta para verificar un token JWT
+router.get('/verify', verifyToken);
 
-// Ruta para generar un token de invitación para un nuevo profesor
+// Ruta para que un administrador genere un token de invitación para un nuevo profesor
 router.post('/generate-token', generateTokenForTeacherRegistration);
 
-// Ruta para verificar un token JWT (Asegúrate de que esta ruta esté bien definida y que la función `verifyToken` exista)
-router.get('/verify', verifyToken);
+// Ruta para que un profesor cambie su contraseña temporal
+router.put('/change-password', changeTemporaryPassword);
 
 module.exports = router;
