@@ -29,10 +29,6 @@ const StudentSchema = new mongoose.Schema({
     ref: 'Teacher',
     required: false, 
   },
-  role: {
-    type: String,
-    default: 'student', // Asignamos el rol de estudiante
-  },
 }, { timestamps: true });
 
 // Método para comparar contraseñas

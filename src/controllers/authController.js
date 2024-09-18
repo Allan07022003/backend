@@ -17,38 +17,42 @@ const loginUnificado = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Buscar primero al estudiante
+    // Intentar buscar el estudiante
     let user = await Student.findOne({ email });
-
     if (user) {
-      const isMatch = await bcrypt.compare(password, user.password); // Verifica la contraseña
+      console.log("Estudiante encontrado:", user.email);
+      const isMatch = await user.matchPassword(password);  // Verificar la contraseña
       if (isMatch) {
         const token = generateToken(user._id);
+        console.log("Estudiante autenticado:", user.email);
         return res.status(200).json({ token, role: 'student' });
       } else {
-        return res.status(401).json({ message: 'Credenciales incorrectas' });
+        console.log("Contraseña incorrecta para estudiante");
       }
     }
 
-    // Si no es un estudiante, buscar al profesor
+    // Intentar buscar el profesor
     user = await Teacher.findOne({ email });
     if (user) {
-      const isMatch = await bcrypt.compare(password, user.password); // Verifica la contraseña
+      console.log("Profesor encontrado:", user.email);
+      const isMatch = await user.matchPassword(password);  // Verificar la contraseña
       if (isMatch) {
         const token = generateToken(user._id);
+        console.log("Profesor autenticado:", user.email);
         return res.status(200).json({ token, role: 'teacher' });
       } else {
-        return res.status(401).json({ message: 'Credenciales incorrectas' });
+        console.log("Contraseña incorrecta para profesor");
       }
     }
 
-    // Si no se encontró el usuario en ninguna colección
-    return res.status(404).json({ message: 'Usuario no encontrado' });
+    console.log('Credenciales incorrectas para', email);
+    return res.status(401).json({ message: 'Credenciales incorrectas' });
   } catch (error) {
     console.error('Error en el inicio de sesión:', error);
     res.status(500).json({ message: 'Error en el servidor' });
   }
 };
+
 
 // Función para registrar un profesor con un token de invitación
 const registerTeacherWithToken = async (req, res) => {
