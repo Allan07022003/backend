@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-const argon2 = require('argon2'); 
+const argon2 = require('argon2');
+
 const TeacherSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -19,10 +20,6 @@ const TeacherSchema = new mongoose.Schema({
     enum: ['2nd Grade', '3rd Grade', '4th Grade'],
     required: true,
   },
-  students: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Student',
-  }],
   isTemporaryPassword: {
     type: Boolean,
     default: false,
@@ -30,26 +27,22 @@ const TeacherSchema = new mongoose.Schema({
 });
 
 // Middleware para encriptar la contraseña antes de guardar
-TeacherSchema.pre('save', async function(next) {
+TeacherSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
     return next();
   }
+
   try {
-    this.password = await argon2.hash(this.password.trim()); 
+    this.password = await argon2.hash(this.password);
     next();
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(error);
   }
 });
 
 // Método para comparar contraseñas
-TeacherSchema.methods.matchPassword = async function(enteredPassword) {
-  const isMatch = await argon2.verify(this.password, enteredPassword.trim()); // Compara con argon2
-
-
-  return isMatch;
+TeacherSchema.methods.matchPassword = async function (enteredPassword) {
+  return await argon2.verify(this.password, enteredPassword);
 };
 
-const Teacher = mongoose.models.Teacher || mongoose.model('Teacher', TeacherSchema);
-
-module.exports = Teacher;
+module.exports = mongoose.model('Teacher', TeacherSchema);
