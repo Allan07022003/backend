@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
+const argon2 = require('argon2');
 const Teacher = require('../models/teacher');
 const Student = require('../models/students');
 const Token = require('../models/Token');
@@ -12,6 +12,8 @@ const generateToken = (id) => {
     expiresIn: '30d',
   });
 };
+
+const argon2 = require('argon2'); // Asegúrate de tener esta importación
 
 const loginUnificado = async (req, res) => {
   const { email, password } = req.body;
@@ -36,10 +38,14 @@ const loginUnificado = async (req, res) => {
     user = await Teacher.findOne({ email });
     if (user) {
       console.log("Profesor encontrado:", user.email);
-const isMatch = await user.matchPassword(password);
-console.log("Contraseña ingresada:", password);
-console.log("Contraseña hasheada en DB:", user.password);
-console.log("Resultado de la comparación:", isMatch);
+
+      // Comparar contraseñas de manera directa
+      console.log("Contraseña ingresada:", password);
+      console.log("Contraseña hasheada en DB:", user.password);
+
+      // Probar la comparación directamente con argon2.verify
+      const isMatch = await argon2.verify(user.password, password); // Verificación directa
+      console.log("Resultado de la comparación:", isMatch);
 
       if (isMatch) {
         const token = generateToken(user._id);
@@ -48,7 +54,6 @@ console.log("Resultado de la comparación:", isMatch);
       } else {
         console.log("Contraseña incorrecta para profesor");
       }
-      
     }
 
     console.log('Credenciales incorrectas para', email);
@@ -58,7 +63,6 @@ console.log("Resultado de la comparación:", isMatch);
     res.status(500).json({ message: 'Error en el servidor' });
   }
 };
-
 
 // Función para registrar un profesor con un token de invitación
 const registerTeacherWithToken = async (req, res) => {
@@ -76,7 +80,7 @@ const registerTeacherWithToken = async (req, res) => {
       return res.status(400).json({ message: 'El profesor ya está registrado' });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await argon2.hash(password);
     const newTeacher = new Teacher({
       name,
       email: validToken.email,
@@ -156,7 +160,7 @@ const changeTemporaryPassword = async (req, res) => {
     return res.status(404).json({ message: 'Profesor no encontrado' });
   }
 
-  const hashedPassword = await bcrypt.hash(newPassword, 10);
+  const hashedPassword = await argon2.hash(newPassword);
   teacher.password = hashedPassword;
   await teacher.save();
 
@@ -170,6 +174,4 @@ module.exports = {
   verifyToken,
   generateTokenForTeacherRegistration,
   changeTemporaryPassword,
- 
 };
-

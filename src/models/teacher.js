@@ -30,7 +30,8 @@ const TeacherSchema = new mongoose.Schema({
   },
 });
 
-// Middleware para encriptar la contraseña antes de guardar
+// Middleware para encriptar la contraseña antes de guardar (COMENTADO TEMPORALMENTE)
+/* 
 TeacherSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {
     return next();
@@ -43,17 +44,11 @@ TeacherSchema.pre('save', async function (next) {
     next(error);
   }
 });
+*/
 
 // Método para comparar contraseñas
-// teacher model
 TeacherSchema.methods.matchPassword = async function (enteredPassword) {
-  try {
-    return await argon2.verify(this.password, enteredPassword);
-  } catch (error) {
-    console.error("Error al verificar la contraseña:", error);
-    return false;
-  }
+  return await argon2.verify(this.password, enteredPassword);
 };
-
 
 module.exports = mongoose.model('Teacher', TeacherSchema);
