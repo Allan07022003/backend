@@ -38,12 +38,14 @@ class AuthService {
       port: 465,
       secure: true, // SSL
       auth: {
-        user: process.env.EMAIL_USER,// se inyectan las credenciales desde el .env
+        user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
       tls: {
-        rejectUnauthorized: false, // Opcional para evitar problemas de certificados en desarrollo
+        rejectUnauthorized: false,
       },
+      logger: true, // Habilitar el modo de registro
+      debug: true,  // Mostrar detalles en la consola
     });
 
     const mailOptions = {
