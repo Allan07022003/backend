@@ -13,7 +13,6 @@ const generateToken = (id) => {
   });
 };
 
-const argon2 = require('argon2'); // Asegúrate de tener esta importación
 
 const loginUnificado = async (req, res) => {
   const { email, password } = req.body;
