@@ -47,10 +47,9 @@ const loginStudent = async (req, res) => {
   }
 };
 
-// Completar el perfil del estudiante
 const completeStudentProfile = async (req, res) => {
   try {
-    const { name, age, grade } = req.body;
+    const { firstName, lastName, age, grade } = req.body;
     const student = await studentService.findStudentById(req.user.id); // Obtiene el estudiante autenticado
 
     if (!student) {
@@ -61,10 +60,15 @@ const completeStudentProfile = async (req, res) => {
     let teacher;
     if (grade === '2nd Grade') {
       teacher = await studentService.findTeacherByGrade('2nd Grade');
+    } else if (grade === '3rd Grade') {
+      teacher = await studentService.findTeacherByGrade('3rd Grade');
+    } else if (grade === '4th Grade') {
+      teacher = await studentService.findTeacherByGrade('4th Grade');
     }
 
-    // Completar el perfil del estudiante despues del inicio de sesion 
-    student.name = name || student.name;
+    // Completar el perfil del estudiante
+    student.firstName = firstName || student.firstName;
+    student.lastName = lastName || student.lastName;
     student.age = age || student.age;
     student.grade = grade || student.grade;
     student.registeredBy = teacher ? teacher._id : student.registeredBy;
@@ -76,6 +80,8 @@ const completeStudentProfile = async (req, res) => {
     res.status(500).json({ message: 'Error al completar el perfil: ' + error.message });
   }
 };
+
+
 
 // Otras funciones del controlador
 const createStudent = async (req, res) => {

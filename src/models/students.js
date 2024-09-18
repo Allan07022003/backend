@@ -2,7 +2,11 @@ const mongoose = require('mongoose');
 const argon2 = require('argon2');
 
 const StudentSchema = new mongoose.Schema({
-  name: {
+  firstName: {
+    type: String,
+    required: false, 
+  },
+  lastName: {
     type: String,
     required: false, 
   },
