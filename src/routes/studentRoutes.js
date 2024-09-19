@@ -46,10 +46,13 @@ router.get('/profile-status', protect, async (req, res) => {
       return res.status(404).json({ message: 'Estudiante no encontrado' });
     }
 
-    const isComplete = student.name && student.age && student.grade;
+    // Verificar que todos los campos estén completos
+    const isComplete = student.firstName && student.lastName && student.age && student.grade;
+    
+    // Retornar el estado de completitud del perfil
     res.status(200).json({ isComplete: !!isComplete });
   } catch (error) {
-    res.status(500).json({ message: 'Error al verificar el estado del perfil' });
+    res.status(500).json({ message: 'Error al verificar el estado del perfil: ' + error.message });
   }
 });
 

@@ -111,6 +111,22 @@ const updateStudent = async (req, res) => {
   }
 };
 
+const checkProfileStatus = async (req, res) => {
+  try {
+    const student = await studentService.findStudentById(req.user.id); // Obtiene el estudiante autenticado
+
+    if (!student) {
+      return res.status(404).json({ message: 'Estudiante no encontrado' });
+    }
+
+    // Verifica si los campos necesarios están completos
+    const isComplete = student.firstName && student.lastName && student.age && student.grade;
+
+    res.status(200).json({ isComplete });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al verificar el estado del perfil: ' + error.message });
+  }
+};
 
 const deleteStudent = async (req, res) => {
   try {
