@@ -8,8 +8,9 @@ const {
   getStudents,
   updateStudent,
   deleteStudent,
+  requestPasswordResetStudent,   
+  resetPasswordStudent           
 } = require('../controllers/studentController');
-const Student = require('../models/students');
 const { protect } = require('../middleware/authMiddleware');
 
 const router = express.Router();
@@ -24,7 +25,7 @@ router.post(
   registerStudent
 );
 
-// Inicio de sesión de estudiantes
+// Inicio de sesión de estudiantes (sin autenticación)
 router.post(
   '/login',
   [
@@ -34,10 +35,16 @@ router.post(
   loginStudent
 );
 
+// Solicitar la recuperación de contraseña (sin autenticación)
+router.post('/password-reset', requestPasswordResetStudent);
+
+// Restablecer la contraseña usando el token de recuperación (sin autenticación)
+router.post('/reset-password/:token', resetPasswordStudent);
+
 // Completar el perfil del estudiante (requiere autenticación)
 router.put('/complete-profile', protect, completeStudentProfile);
 
-// Ruta para verificar el estado del perfil del estudiante
+// Ruta para verificar el estado del perfil del estudiante (requiere autenticación)
 router.get('/profile-status', protect, async (req, res) => {
   try {
     const student = await Student.findById(req.user.id);
@@ -47,10 +54,9 @@ router.get('/profile-status', protect, async (req, res) => {
     }
     // Verificamos si el perfil está completo
     const isProfileComplete = student.firstName && student.lastName && student.age && student.grade;
-    // Devolvemos el estado del perfil y los datos del estudiante
     res.status(200).json({
       isComplete: isProfileComplete,
-      name: `${student.firstName} ${student.lastName}`, // Nombre completo del estudiante
+      name: `${student.firstName} ${student.lastName}`,
       firstName: student.firstName,
       lastName: student.lastName,
       age: student.age,
@@ -61,24 +67,13 @@ router.get('/profile-status', protect, async (req, res) => {
   }
 });
 
-// estudiantes con profesor asignado
-router.get('/students-with-teacher', protect, async (req, res) => {
-  try {
-    const students = await Student.find().populate('registeredBy', 'name email grade');
-    res.status(200).json(students);
-  } catch (error) {
-    res.status(500).json({ message: 'Error al obtener estudiantes con su profesor: ' + error.message });
-  }
-});
-
 // Crear un nuevo estudiante (requiere autenticación)
 router.post('/create', protect, createStudent);
 
 // Obtener todos los estudiantes (requiere autenticación)
 router.get('/', protect, getStudents);
 
-console.log(typeof updateStudent);  // Esto debería mostrar 'function' en la consola
-
+// Actualizar datos de un estudiante (requiere autenticación)
 router.put('/:id', protect, updateStudent);
 
 // Eliminar un estudiante (requiere autenticación)

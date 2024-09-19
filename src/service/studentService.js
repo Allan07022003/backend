@@ -22,15 +22,14 @@ class StudentService {
     }
   }
 
-  // Método para obtener todos los estudiantes
-  async getAllStudents() {
-    try {
-      return await Student.find().populate('registeredBy', 'name email');
-    } catch (error) {
-      throw new Error('Error al obtener estudiantes: ' + error.message);
-    }
+// Método para obtener todos los estudiantes
+async getAllStudents() {
+  try {
+    return await Student.find().select('-password').populate('registeredBy', 'name email');
+  } catch (error) {
+    throw new Error('Error al obtener estudiantes: ' + error.message);
   }
-
+}
   // Método para actualizar un estudiante
   async updateStudent(id, data) {
     try {
