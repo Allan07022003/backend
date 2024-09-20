@@ -12,7 +12,6 @@ const {
   resetPasswordStudent           
 } = require('../controllers/studentController');
 const { protect } = require('../middleware/authMiddleware');
-
 const router = express.Router();
 
 // Registro inicial para estudiantes (sin autenticación)
@@ -24,7 +23,6 @@ router.post(
   ],
   registerStudent
 );
-
 // Inicio de sesión de estudiantes (sin autenticación)
 router.post(
   '/login',
@@ -52,6 +50,7 @@ router.get('/profile-status', protect, async (req, res) => {
     if (!student) {
       return res.status(404).json({ message: 'Estudiante no encontrado' });
     }
+    
     // Verificamos si el perfil está completo
     const isProfileComplete = student.firstName && student.lastName && student.age && student.grade;
     res.status(200).json({
@@ -63,9 +62,11 @@ router.get('/profile-status', protect, async (req, res) => {
       grade: student.grade
     });
   } catch (error) {
+    console.error('Error en /profile-status:', error);  // Agregar este console.error para ver detalles del error
     res.status(500).json({ message: 'Error al obtener el estado del perfil: ' + error.message });
   }
 });
+
 
 // Crear un nuevo estudiante (requiere autenticación)
 router.post('/create', protect, createStudent);
