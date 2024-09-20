@@ -19,21 +19,27 @@ const getAllStudents = async (req, res) => {
 // Obtener estudiantes asignados al maestro
 const getStudentsByTeacher = async (req, res) => {
   try {
-    const teacher = await Teacher.findById(req.user.id).populate('students', 'name email grade progress');
+    // ID del profesor autenticado
+    const teacherId = req.user.id;
+    const teacherGrade = req.user.grade; // Grado del profesor autenticado
 
-    if (!teacher) {
-      return res.status(404).json({ message: 'Maestro no encontrado' });
-    }
+    // Buscar los estudiantes que tienen asignado al profesor y que coincidan en el grado
+    const students = await Student.find({
+      registeredBy: teacherId,
+      grade: teacherGrade
+    }).select('firstName lastName email grade');
 
-    if (teacher.students.length === 0) {
+    if (students.length === 0) {
       return res.status(200).json({ message: 'No tienes estudiantes asignados.' });
     }
 
-    res.json(teacher.students);
+    res.status(200).json(students);
   } catch (error) {
+    console.error("Error al obtener los estudiantes asignados:", error);
     res.status(500).json({ message: 'Error al obtener los estudiantes asignados: ' + error.message });
   }
 };
+
 
 // Obtener el progreso de un estudiante específico
 const getStudentProgress = async (req, res) => {
