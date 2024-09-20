@@ -19,10 +19,7 @@ const getAllStudents = async (req, res) => {
 // Obtener estudiantes asignados al maestro
 const getStudentsByTeacher = async (req, res) => {
   try {
-    console.log("ID del profesor desde el token:", req.user.id); // Log para verificar si el id del profesor se obtiene correctamente
-
     const teacher = await Teacher.findById(req.user.id).populate('students', 'name email grade progress');
-    console.log("Profesor encontrado:", teacher); // Log para verificar si se encuentra al profesor
 
     if (!teacher) {
       return res.status(404).json({ message: 'Maestro no encontrado' });
@@ -34,7 +31,6 @@ const getStudentsByTeacher = async (req, res) => {
 
     res.json(teacher.students);
   } catch (error) {
-    console.error("Error al obtener los estudiantes asignados:", error); // Log para capturar el error
     res.status(500).json({ message: 'Error al obtener los estudiantes asignados: ' + error.message });
   }
 };

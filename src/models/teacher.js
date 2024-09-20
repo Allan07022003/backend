@@ -28,10 +28,6 @@ const TeacherSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  students: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Student' // Referencia a los estudiantes que pertenecen a este profesor
-  }]
 });
 
 // Método para comparar contraseñas

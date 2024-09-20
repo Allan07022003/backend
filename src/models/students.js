@@ -31,7 +31,7 @@ const StudentSchema = new mongoose.Schema({
   registeredBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Teacher',
-    required: true, // El campo es ahora obligatorio
+    required: false, 
   },
 }, { timestamps: true });
 
