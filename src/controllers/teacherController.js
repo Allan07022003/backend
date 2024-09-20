@@ -64,12 +64,22 @@ const getStudentProgress = async (req, res) => {
 // Crear un nuevo estudiante
 const createStudent = async (req, res) => {
   try {
-    const newStudent = await studentService.createStudent(req.body);
+    // Crear el nuevo estudiante, asegurándonos de agregar el 'registeredBy' con el ID del profesor autenticado
+    const newStudentData = {
+      ...req.body,
+      registeredBy: req.user.id, // Asigna el ID del profesor autenticado al campo registeredBy
+      grade: req.user.grade // Asigna el grado del profesor al campo grade del estudiante
+    };
+
+    const newStudent = await studentService.createStudent(newStudentData);
     res.status(201).json(newStudent);
   } catch (error) {
+    console.error("Error al crear el estudiante:", error);
     res.status(500).json({ message: 'Error al crear el estudiante: ' + error.message });
   }
 };
+
+
 
 // Actualizar un estudiante
 const updateStudent = async (req, res) => {
