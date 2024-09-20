@@ -29,8 +29,9 @@ const getStudentsByTeacher = async (req, res) => {
       grade: teacherGrade
     }).select('firstName lastName email grade');
 
+    // Devolver un array vacío si no hay estudiantes
     if (students.length === 0) {
-      return res.status(200).json({ message: 'No tienes estudiantes asignados.' });
+      return res.status(200).json([]); // Devolver un array vacío
     }
 
     res.status(200).json(students);
