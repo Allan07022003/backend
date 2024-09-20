@@ -11,24 +11,24 @@ const protect = async (req, res, next) => {
       token = req.headers.authorization.split(' ')[1]; // Obtener el token
       const decoded = jwt.verify(token, process.env.JWT_SECRET); // Verificar el token
 
-      // Buscar en la base de datos al profesor
+      // Buscar en la base de datos si es un estudiante o profesor
+      const student = await Student.findById(decoded.id).select('-password');
       const teacher = await Teacher.findById(decoded.id).select('-password');
 
-      if (!teacher) {
-        return res.status(404).json({ message: 'Profesor no encontrado' });
+      if (!student && !teacher) {
+        return res.status(404).json({ message: 'Usuario no encontrado' });
       }
 
-      req.user = teacher; // Asigna la información del profesor a req.user
+      req.user = student || teacher; // Asigna la información del estudiante o profesor a req.user
       next();
     } catch (error) {
-      console.error('Error al verificar el token:', error);
+      console.error(error);
       res.status(401).json({ message: 'Token no válido' });
     }
   } else {
     res.status(401).json({ message: 'No se proporcionó un token' });
   }
 };
-
 // Middleware para verificar si el usuario es profesor
 const teacherProtect = (req, res, next) => {
   if (req.user && req.user.role === 'teacher') {
