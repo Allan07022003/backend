@@ -27,7 +27,7 @@ const getStudentsByTeacher = async (req, res) => {
     const students = await Student.find({
       registeredBy: teacherId,
       grade: teacherGrade
-    }).select('firstName lastName email grade');
+    }).select('firstName lastName email grade age');
 
     // Devolver un array vacío si no hay estudiantes
     if (students.length === 0) {
