@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const Token = require('../models/Token'); 
 const teacherService = require('../service/teacherService');
-const studentService = require('../service/studentService'); // Importar el servicio de estudiantes
+const studentService = require('../service/studentService'); 
 
 // Obtener todos los estudiantes
 const getAllStudents = async (req, res) => {
@@ -65,9 +65,13 @@ const getStudentProgress = async (req, res) => {
 // Crear un nuevo estudiante
 const createStudent = async (req, res) => {
   try {
+    // Hashear la contraseña antes de crear el estudiante
+    const hashedPassword = await studentService.hashPassword(req.body.password);
+
     // Crear el nuevo estudiante, asegurándonos de agregar el 'registeredBy' con el ID del profesor autenticado
     const newStudentData = {
       ...req.body,
+      password: hashedPassword, // Guardar la contraseña hasheada
       registeredBy: req.user.id, // Asigna el ID del profesor autenticado al campo registeredBy
       grade: req.user.grade // Asigna el grado del profesor al campo grade del estudiante
     };
@@ -79,6 +83,7 @@ const createStudent = async (req, res) => {
     res.status(500).json({ message: 'Error al crear el estudiante: ' + error.message });
   }
 };
+
 
 
 
