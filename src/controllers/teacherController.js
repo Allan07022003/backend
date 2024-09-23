@@ -62,7 +62,6 @@ const getStudentProgress = async (req, res) => {
   }
 };
 
-// Crear un nuevo estudiante
 const createStudent = async (req, res) => {
   try {
     // Hashear la contraseña antes de crear el estudiante
@@ -87,13 +86,19 @@ const createStudent = async (req, res) => {
 
 
 // Actualizar un estudiante
+// Actualizar un estudiante
 const updateStudent = async (req, res) => {
   try {
-    const { password, ...updateData } = req.body; // Excluir la contraseña
+    const { password, grade, ...updateData } = req.body; // Incluimos el campo grade en la desestructuración
 
     // Si hay una nueva contraseña, la hasheamos
     if (password) {
       updateData.password = await studentService.hashPassword(password);
+    }
+
+    // Si el grado está presente en la actualización, lo incluimos
+    if (grade) {
+      updateData.grade = grade;
     }
 
     const updatedStudent = await Student.findByIdAndUpdate(req.params.id, updateData, { new: true });
