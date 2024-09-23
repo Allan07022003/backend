@@ -90,12 +90,20 @@ const createStudent = async (req, res) => {
 // Actualizar un estudiante
 const updateStudent = async (req, res) => {
   try {
-    const updatedStudent = await studentService.updateStudent(req.params.id, req.body);
+    const { password, ...updateData } = req.body;
+
+    // Si hay una nueva contraseña, la hasheamos
+    if (password) {
+      updateData.password = await studentService.hashPassword(password);
+    }
+
+    const updatedStudent = await Student.findByIdAndUpdate(req.params.id, updateData, { new: true });
     res.status(200).json(updatedStudent);
   } catch (error) {
     res.status(500).json({ message: 'Error al actualizar el estudiante: ' + error.message });
   }
 };
+
 
 // Eliminar un estudiante
 const deleteStudent = async (req, res) => {
