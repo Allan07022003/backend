@@ -27,7 +27,7 @@ const getStudentsByTeacher = async (req, res) => {
     const students = await Student.find({
       registeredBy: teacherId,
       grade: teacherGrade
-    }).select('firstName lastName email grade age');
+    }).select('firstName lastName email  grade age');
 
     // Devolver un array vacío si no hay estudiantes
     if (students.length === 0) {
@@ -86,11 +86,10 @@ const createStudent = async (req, res) => {
 
 
 
-
 // Actualizar un estudiante
 const updateStudent = async (req, res) => {
   try {
-    const { password, ...updateData } = req.body;
+    const { password, ...updateData } = req.body; // Excluir la contraseña
 
     // Si hay una nueva contraseña, la hasheamos
     if (password) {
@@ -103,6 +102,7 @@ const updateStudent = async (req, res) => {
     res.status(500).json({ message: 'Error al actualizar el estudiante: ' + error.message });
   }
 };
+
 
 
 // Eliminar un estudiante
