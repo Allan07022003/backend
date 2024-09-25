@@ -40,13 +40,13 @@ app.post('/api/speak', async (req, res) => {
   const request = {
     input: { text },
     voice: {
-      languageCode: 'es-US', // Español latinoamericano
-      ssmlGender: 'FEMALE',  // Voz femenina
-      name: 'es-US-Wavenet-C', // Voz femenina joven (puedes probar es-MX-Wavenet-B también)
+      languageCode: 'es-US',  // Español de EE.UU.
+      ssmlGender: 'FEMALE',   // Voz femenina
+      name: 'es-US-Standard-A', // Voz estándar femenina
     },
     audioConfig: {
       audioEncoding: 'MP3',
-      speakingRate: 0.8, // Velocidad un poco más lenta para niños
+      speakingRate: 0.8, // Velocidad ajustada para niños
     },
   };
 
@@ -60,6 +60,7 @@ app.post('/api/speak', async (req, res) => {
     res.status(500).send('Error al generar la voz');
   }
 });
+
 
 
 // Rutas
