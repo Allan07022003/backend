@@ -46,7 +46,6 @@ app.post('/api/speak', async (req, res) => {
     },
     audioConfig: {
       audioEncoding: 'MP3',
-      speakingRate: 0.8, // Velocidad ajustada para niños
     },
   };
 
