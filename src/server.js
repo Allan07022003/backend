@@ -35,28 +35,32 @@ const ttsClient = new textToSpeech.TextToSpeechClient({
 
 // Ruta para utilizar Text-to-Speech
 app.post('/api/speak', async (req, res) => {
-  const { text } = req.body; // El texto que queremos convertir en voz
+  const { text } = req.body;
+
   const request = {
     input: { text },
     voice: {
-      languageCode: 'es-ES', // Voz en español
+      languageCode: 'es-US', // Español latinoamericano
       ssmlGender: 'FEMALE',  // Voz femenina
+      name: 'es-US-Wavenet-C', // Voz femenina joven (puedes probar es-MX-Wavenet-B también)
     },
-    audioConfig: { audioEncoding: 'MP3' }, // Formato de salida
+    audioConfig: {
+      audioEncoding: 'MP3',
+      speakingRate: 0.8, // Velocidad un poco más lenta para niños
+    },
   };
 
   try {
-    // Solicitud a la API de Google Cloud Text-to-Speech
     const [response] = await ttsClient.synthesizeSpeech(request);
 
-    // Devolver el contenido de audio como respuesta
     res.set('Content-Type', 'audio/mp3');
     res.send(response.audioContent);
   } catch (error) {
-    console.error('Error con Text-to-Speech:', error);
+    console.error('Error al generar la voz:', error);
     res.status(500).send('Error al generar la voz');
   }
 });
+
 
 // Rutas
 app.use('/api/students', require('./routes/studentRoutes')); // Rutas para estudiantes
