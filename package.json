@@ -11,11 +11,12 @@
   "author": "Allan",
   "license": "ISC",
   "dependencies": {
+    "@google-cloud/text-to-speech": "^5.4.0",
     "argon2": "^0.40.3",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "express": "^4.19.2",
+    "express": "^4.21.0",
     "express-rate-limit": "^7.4.0",
     "express-validator": "^7.2.0",
     "jsonwebtoken": "^9.0.2",

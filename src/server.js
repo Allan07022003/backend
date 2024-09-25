@@ -4,6 +4,9 @@ const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
+// Importar el cliente de Google Cloud Text-to-Speech
+const textToSpeech = require('@google-cloud/text-to-speech');
+
 const app = express();
 
 // Configurar el limitador de tasa antes de las rutas
@@ -20,6 +23,40 @@ connectDB();
 // Middlewares
 app.use(cors());
 app.use(express.json());
+
+// Configurar el cliente de Google Cloud Text-to-Speech usando las variables de entorno
+const ttsClient = new textToSpeech.TextToSpeechClient({
+  credentials: {
+    private_key: process.env.GOOGLE_CLOUD_PRIVATE_KEY.replace(/\\n/g, '\n'),
+    client_email: process.env.GOOGLE_CLOUD_CLIENT_EMAIL,
+  },
+  projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
+});
+
+// Ruta para utilizar Text-to-Speech
+app.post('/api/speak', async (req, res) => {
+  const { text } = req.body; // El texto que queremos convertir en voz
+  const request = {
+    input: { text },
+    voice: {
+      languageCode: 'es-ES', // Voz en español
+      ssmlGender: 'FEMALE',  // Voz femenina
+    },
+    audioConfig: { audioEncoding: 'MP3' }, // Formato de salida
+  };
+
+  try {
+    // Solicitud a la API de Google Cloud Text-to-Speech
+    const [response] = await ttsClient.synthesizeSpeech(request);
+
+    // Devolver el contenido de audio como respuesta
+    res.set('Content-Type', 'audio/mp3');
+    res.send(response.audioContent);
+  } catch (error) {
+    console.error('Error con Text-to-Speech:', error);
+    res.status(500).send('Error al generar la voz');
+  }
+});
 
 // Rutas
 app.use('/api/students', require('./routes/studentRoutes')); // Rutas para estudiantes
