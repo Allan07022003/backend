@@ -2,7 +2,6 @@ const Teacher = require('../models/teacher');
 const argon2 = require('argon2');
 
 class TeacherService {
-  // Buscar un profesor por email
   async findTeacherByEmail(email) {
     try {
       return await Teacher.findOne({ email });
@@ -11,7 +10,6 @@ class TeacherService {
     }
   }
 
-  // Crear un profesor
   async createTeacher(data) {
     try {
       const teacher = new Teacher(data);
@@ -21,7 +19,6 @@ class TeacherService {
     }
   }
 
-  // Obtener todos los profesores
   async getAllTeachers() {
     try {
       return await Teacher.find();
@@ -30,7 +27,6 @@ class TeacherService {
     }
   }
 
-  // Actualizar un profesor
   async updateTeacher(id, data) {
     try {
       return await Teacher.findByIdAndUpdate(id, data, { new: true });
@@ -39,7 +35,6 @@ class TeacherService {
     }
   }
 
-  // Eliminar un profesor
   async deleteTeacher(id) {
     try {
       return await Teacher.findByIdAndDelete(id);
@@ -48,7 +43,6 @@ class TeacherService {
     }
   }
 
-  // Hashear una contraseña
   async hashPassword(password) {
     try {
       return await argon2.hash(password);
@@ -57,7 +51,6 @@ class TeacherService {
     }
   }
 
-  // Verificar una contraseña
   async verifyPassword(enteredPassword, storedPassword) {
     try {
       return await argon2.verify(storedPassword, enteredPassword);
@@ -66,7 +59,6 @@ class TeacherService {
     }
   }
 
-  // Buscar un profesor por su ID
   async findTeacherById(id) {
     try {
       return await Teacher.findById(id);

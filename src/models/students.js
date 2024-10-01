@@ -35,7 +35,6 @@ const StudentSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
-// Método para comparar contraseñas
 StudentSchema.methods.matchPassword = async function(enteredPassword) {
   return await argon2.verify(this.password, enteredPassword);
 };

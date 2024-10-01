@@ -17,7 +17,7 @@ class AuthService {
     const teacher = new Teacher({
       name,
       email: validToken.email.trim(),
-      password: password.trim(), // El modelo lo hasheará automáticamente
+      password: password.trim(), 
       grade,
       isTemporaryPassword: false,
     });
@@ -32,11 +32,10 @@ class AuthService {
     const token = crypto.randomBytes(32).toString('hex');
     await new Token({ token, email: email.trim() }).save();
 
-    // Configuración de nodemailer para enviar el correo
     const transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
       port: 465,
-      secure: true, // SSL
+      secure: true, 
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
@@ -44,8 +43,8 @@ class AuthService {
       tls: {
         rejectUnauthorized: false,
       },
-      logger: true, // Habilitar el modo de registro
-      debug: true,  // Mostrar detalles en la consola
+      logger: true, 
+      debug: true,  
     });
 
     const mailOptions = {
@@ -91,7 +90,7 @@ class AuthService {
     const teacher = await Teacher.findById(teacherId);
     if (!teacher) throw new Error('Profesor no encontrado');
 
-    teacher.password = newPassword.trim(); // El modelo se encargará de hashearla
+    teacher.password = newPassword.trim(); 
     teacher.isTemporaryPassword = false;
     await teacher.save();
   }

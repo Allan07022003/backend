@@ -6,7 +6,6 @@ const Token = require('../models/Token');
 const teacherService = require('../service/teacherService');
 const studentService = require('../service/studentService'); 
 
-// Obtener todos los estudiantes
 const getAllStudents = async (req, res) => {
   try {
     const students = await studentService.getAllStudents();
@@ -16,22 +15,18 @@ const getAllStudents = async (req, res) => {
   }
 };
 
-// Obtener estudiantes asignados al maestro
 const getStudentsByTeacher = async (req, res) => {
   try {
-    // ID del profesor autenticado
     const teacherId = req.user.id;
-    const teacherGrade = req.user.grade; // Grado del profesor autenticado
+    const teacherGrade = req.user.grade; 
 
-    // Buscar los estudiantes que tienen asignado al profesor y que coincidan en el grado
     const students = await Student.find({
       registeredBy: teacherId,
       grade: teacherGrade
     }).select('firstName lastName email  grade age');
 
-    // Devolver un array vacío si no hay estudiantes
     if (students.length === 0) {
-      return res.status(200).json([]); // Devolver un array vacío
+      return res.status(200).json([]); 
     }
 
     res.status(200).json(students);
@@ -42,7 +37,6 @@ const getStudentsByTeacher = async (req, res) => {
 };
 
 
-// Obtener el progreso de un estudiante específico
 const getStudentProgress = async (req, res) => {
   try {
     const student = await Student.findById(req.params.studentId);
@@ -64,15 +58,13 @@ const getStudentProgress = async (req, res) => {
 
 const createStudent = async (req, res) => {
   try {
-    // Hashear la contraseña antes de crear el estudiante
     const hashedPassword = await studentService.hashPassword(req.body.password);
 
-    // Crear el nuevo estudiante, asegurándonos de agregar el 'registeredBy' con el ID del profesor autenticado
     const newStudentData = {
       ...req.body,
-      password: hashedPassword, // Guardar la contraseña hasheada
-      registeredBy: req.user.id, // Asigna el ID del profesor autenticado al campo registeredBy
-      grade: req.user.grade // Asigna el grado del profesor al campo grade del estudiante
+      password: hashedPassword, 
+      registeredBy: req.user.id, 
+      grade: req.user.grade 
     };
 
     const newStudent = await studentService.createStudent(newStudentData);
@@ -83,20 +75,14 @@ const createStudent = async (req, res) => {
   }
 };
 
-
-
-// Actualizar un estudiante
-// Actualizar un estudiante
 const updateStudent = async (req, res) => {
   try {
-    const { password, grade, ...updateData } = req.body; // Incluimos el campo grade en la desestructuración
+    const { password, grade, ...updateData } = req.body; 
 
-    // Si hay una nueva contraseña, la hasheamos
     if (password) {
       updateData.password = await studentService.hashPassword(password);
     }
 
-    // Si el grado está presente en la actualización, lo incluimos
     if (grade) {
       updateData.grade = grade;
     }
@@ -108,9 +94,6 @@ const updateStudent = async (req, res) => {
   }
 };
 
-
-
-// Eliminar un estudiante
 const deleteStudent = async (req, res) => {
   try {
     await studentService.deleteStudent(req.params.id);
@@ -120,7 +103,6 @@ const deleteStudent = async (req, res) => {
   }
 };
 
-// Solicitar recuperación de contraseña para profesores
 const requestPasswordResetTeacher = async (req, res) => {
   const { email } = req.body;
 
@@ -162,7 +144,6 @@ const requestPasswordResetTeacher = async (req, res) => {
   }
 };
 
-// Restablecer contraseña de profesores
 const resetPasswordTeacher = async (req, res) => {
   const { token } = req.params;
   const { password } = req.body;
@@ -193,7 +174,7 @@ const resetPasswordTeacher = async (req, res) => {
 module.exports = {
   requestPasswordResetTeacher,
   resetPasswordTeacher,
-  getAllStudents, // Método para obtener todos los estudiantes
+  getAllStudents, 
   getStudentsByTeacher,
   getStudentProgress,
   createStudent,

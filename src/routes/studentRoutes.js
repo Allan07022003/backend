@@ -12,11 +12,10 @@ const {
   resetPasswordStudent           
 } = require('../controllers/studentController');
 const { protect } = require('../middleware/authMiddleware');
-const Student = require('../models/students');  // <-- Importar el modelo
+const Student = require('../models/students');  
 
 const router = express.Router();
 
-// Registro inicial para estudiantes (sin autenticación)
 router.post(
   '/register',
   [
@@ -26,7 +25,6 @@ router.post(
   registerStudent
 );
 
-// Inicio de sesión de estudiantes (sin autenticación)
 router.post(
   '/login',
   [
@@ -36,16 +34,12 @@ router.post(
   loginStudent
 );
 
-// Solicitar la recuperación de contraseña (sin autenticación)
 router.post('/password-reset', requestPasswordResetStudent);
 
-// Restablecer la contraseña usando el token de recuperación (sin autenticación)
 router.post('/reset-password/:token', resetPasswordStudent);
 
-// Completar el perfil del estudiante (requiere autenticación)
 router.put('/complete-profile', protect, completeStudentProfile);
 
-// Ruta para verificar el estado del perfil del estudiante (requiere autenticación)
 router.get('/profile-status', protect, async (req, res) => {
   try {
     const student = await Student.findById(req.user.id);
@@ -53,7 +47,6 @@ router.get('/profile-status', protect, async (req, res) => {
     if (!student) {
       return res.status(404).json({ message: 'Estudiante no encontrado' });
     }
-    // Verificamos si el perfil está completo
     const isProfileComplete = student.firstName && student.lastName && student.age && student.grade;
     res.status(200).json({
       isComplete: isProfileComplete,
@@ -68,16 +61,12 @@ router.get('/profile-status', protect, async (req, res) => {
   }
 });
 
-// Crear un nuevo estudiante (requiere autenticación)
 router.post('/create', protect, createStudent);
 
-// Obtener todos los estudiantes (requiere autenticación)
 router.get('/', protect, getStudents);
 
-// Actualizar datos de un estudiante (requiere autenticación)
 router.put('/:id', protect, updateStudent);
 
-// Eliminar un estudiante (requiere autenticación)
 router.delete('/:id', protect, deleteStudent);
 
 module.exports = router;

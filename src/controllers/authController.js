@@ -6,7 +6,6 @@ const Token = require('../models/Token');
 const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 
-// Función para generar un token JWT
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: '30d',
@@ -18,7 +17,6 @@ const loginUnificado = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Intentar buscar el estudiante
     let user = await Student.findOne({ email });
     if (user) {
       console.log("Estudiante encontrado:", user.email);
@@ -33,17 +31,14 @@ const loginUnificado = async (req, res) => {
       }
     }
 
-    // Intentar buscar el profesor
     user = await Teacher.findOne({ email });
     if (user) {
       console.log("Profesor encontrado:", user.email);
 
-      // Comparar contraseñas de manera directa
       console.log("Contraseña ingresada:", password);
       console.log("Contraseña hasheada en DB:", user.password);
 
-      // Probar la comparación directamente con argon2.verify
-      const isMatch = await argon2.verify(user.password, password); // Verificación directa
+      const isMatch = await argon2.verify(user.password, password); 
       console.log("Resultado de la comparación:", isMatch);
 
       if (isMatch) {
@@ -63,12 +58,11 @@ const loginUnificado = async (req, res) => {
   }
 };
 
-// Función para registrar un profesor con un token de invitación
 const registerTeacherWithToken = async (req, res) => {
   const { token, name, password, grade } = req.body;
 
   try {
-    const validToken = await Token.findOne({ token }); // Revisa si el token es válido en la DB
+    const validToken = await Token.findOne({ token }); 
 
     if (!validToken) {
       return res.status(400).json({ message: 'Token no válido o expirado' });
@@ -88,7 +82,7 @@ const registerTeacherWithToken = async (req, res) => {
     });
 
     await newTeacher.save();
-    await validToken.deleteOne(); // Borra el token después del registro exitoso
+    await validToken.deleteOne(); 
 
     res.status(201).json({ message: 'Profesor registrado con éxito' });
   } catch (error) {
@@ -97,7 +91,6 @@ const registerTeacherWithToken = async (req, res) => {
   }
 };
 
-// Verificar un token JWT
 const verifyToken = (req, res) => {
   const token = req.headers.authorization?.split(' ')[1];
   if (!token) {
@@ -112,18 +105,15 @@ const verifyToken = (req, res) => {
   }
 };
 
-// Función para generar un token de invitación para un nuevo profesor
 const generateTokenForTeacherRegistration = async (req, res) => {
   const { email } = req.body;
 
-  // Generar un token único
   const token = crypto.randomBytes(32).toString('hex');
   const newToken = new Token({ token, email });
 
   try {
-    await newToken.save(); // Almacenar el token y el email en la colección Token
+    await newToken.save(); 
 
-    // Configuración de nodemailer para enviar el correo
     const transporter = nodemailer.createTransport({
       host: 'smtp.gmail.com',
       port: 465,
@@ -150,7 +140,6 @@ const generateTokenForTeacherRegistration = async (req, res) => {
   }
 };
 
-// Función para cambiar una contraseña temporal
 const changeTemporaryPassword = async (req, res) => {
   const { email, newPassword } = req.body;
 
@@ -166,7 +155,6 @@ const changeTemporaryPassword = async (req, res) => {
   res.json({ message: 'Contraseña actualizada correctamente' });
 };
 
-// Exportar todas las funciones necesarias
 module.exports = {
   loginUnificado,
   registerTeacherWithToken,

@@ -4,7 +4,6 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const Token = require('../models/Token'); 
 
-// Registro de estudiante
 const registerStudent = async (req, res) => {
   const { email, password } = req.body;
 
@@ -23,7 +22,6 @@ const registerStudent = async (req, res) => {
   }
 };
 
-// Inicio de sesión de estudiante
 const loginStudent = async (req, res) => {
   const { email, password } = req.body;
 
@@ -38,7 +36,6 @@ const loginStudent = async (req, res) => {
       return res.status(400).json({ message: 'Credenciales incorrectas' });
     }
 
-    // Generar un token JWT
     const token = jwt.sign({ id: student._id }, process.env.JWT_SECRET, {
       expiresIn: '1h',
     });
@@ -52,13 +49,12 @@ const loginStudent = async (req, res) => {
 const completeStudentProfile = async (req, res) => {
   try {
     const { firstName, lastName, age, grade } = req.body;
-    const student = await studentService.findStudentById(req.user.id); // Obtiene el estudiante autenticado
+    const student = await studentService.findStudentById(req.user.id); 
 
     if (!student) {
       return res.status(404).json({ message: 'Estudiante no encontrado' });
     }
 
-    // Asignación automática de un maestro según el grado
     let teacher;
     if (grade === '2nd Grade') {
       teacher = await studentService.findTeacherByGrade('2nd Grade');
@@ -67,8 +63,6 @@ const completeStudentProfile = async (req, res) => {
     } else if (grade === '4th Grade') {
       teacher = await studentService.findTeacherByGrade('4th Grade');
     }
-
-    // Completar el perfil del estudiante
     student.firstName = firstName || student.firstName;
     student.lastName = lastName || student.lastName;
     student.age = age || student.age;
@@ -85,7 +79,6 @@ const completeStudentProfile = async (req, res) => {
 
 
 
-// Otras funciones del controlador
 const createStudent = async (req, res) => {
   try {
     const student = await studentService.createStudent(req.body);
@@ -97,7 +90,7 @@ const createStudent = async (req, res) => {
 
 const getStudents = async (req, res) => {
   try {
-    const students = await studentService.getAllStudents().select('-password'); // Excluir la contraseña
+    const students = await studentService.getAllStudents().select('-password'); 
     res.status(200).json(students);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -107,9 +100,8 @@ const getStudents = async (req, res) => {
 
 const updateStudent = async (req, res) => {
   try {
-    const { password, ...updateData } = req.body; // Excluir la contraseña
+    const { password, ...updateData } = req.body; 
 
-    // Si hay una nueva contraseña, hashearla antes de guardar
     if (password) {
       updateData.password = await studentService.hashPassword(password);
     }
@@ -123,13 +115,12 @@ const updateStudent = async (req, res) => {
 
 const checkProfileStatus = async (req, res) => {
   try {
-    const student = await studentService.findStudentById(req.user.id); // Use the student service to find the student
+    const student = await studentService.findStudentById(req.user.id); 
 
     if (!student) {
       return res.status(404).json({ message: 'Estudiante no encontrado' });
     }
 
-    // Verifica si los campos necesarios están completos
     const isComplete = student.firstName && student.lastName && student.age && student.grade;
 
     res.status(200).json({
@@ -153,7 +144,6 @@ const deleteStudent = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-// Función para solicitar la recuperación de contraseña para estudiantes
 const requestPasswordResetStudent = async (req, res) => {
   const { email } = req.body;
 
@@ -163,13 +153,11 @@ const requestPasswordResetStudent = async (req, res) => {
       return res.status(404).json({ message: 'Correo no registrado' });
     }
 
-    // Generar un token de recuperación
     const resetToken = crypto.randomBytes(32).toString('hex');
-    const hashedToken = await studentService.hashPassword(resetToken); // Hasheamos el token para almacenarlo
+    const hashedToken = await studentService.hashPassword(resetToken); 
     const newToken = new Token({ token: hashedToken, userId: student._id, role: 'student' });
     await newToken.save();
 
-    // Enviar el correo con nodemailer
     const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
     const message = `Has solicitado restablecer tu contraseña. Haz clic en el siguiente enlace para continuar: ${resetUrl}`;
     
@@ -197,13 +185,12 @@ const requestPasswordResetStudent = async (req, res) => {
   }
 };
 
-// Función para restablecer la contraseña del estudiante
 const resetPasswordStudent = async (req, res) => {
   const { token } = req.params;
   const { password } = req.body;
 
   try {
-    const storedToken = await Token.findOne({ token }); // Buscamos el token en la DB
+    const storedToken = await Token.findOne({ token }); 
     if (!storedToken) {
       return res.status(400).json({ message: 'Token inválido o expirado' });
     }
@@ -213,12 +200,10 @@ const resetPasswordStudent = async (req, res) => {
       return res.status(404).json({ message: 'Estudiante no encontrado' });
     }
 
-    // Actualizar la contraseña
     const hashedPassword = await studentService.hashPassword(password);
     student.password = hashedPassword;
     await student.save();
 
-    // Eliminar el token una vez que se restableció la contraseña
     await storedToken.deleteOne();
 
     res.status(200).json({ message: 'Contraseña restablecida con éxito' });

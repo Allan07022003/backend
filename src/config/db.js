@@ -6,7 +6,7 @@ const connectDB = async () => {
     console.log('MongoDB Atlas conectado');
   } catch (error) {
     console.error('Error conectando a MongoDB:', error.message);
-    process.exit(1); // Detiene la aplicación en caso de error
+    process.exit(1); 
   }
 };
 

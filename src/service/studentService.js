@@ -3,7 +3,6 @@ const argon2 = require('argon2');
 const Teacher = require('../models/teacher');
 
 class StudentService {
-  // Método para buscar un estudiante por su email
   async findStudentByEmail(email) {
     try {
       return await Student.findOne({ email });
@@ -12,7 +11,6 @@ class StudentService {
     }
   }
 
-  // Método para crear un estudiante
   async createStudent(data) {
     try {
       const student = new Student(data);
@@ -22,7 +20,6 @@ class StudentService {
     }
   }
 
-// Método para obtener todos los estudiantes
 async getAllStudents() {
   try {
     return await Student.find().select('-password').populate('registeredBy', 'name email');
@@ -30,7 +27,6 @@ async getAllStudents() {
     throw new Error('Error al obtener estudiantes: ' + error.message);
   }
 }
-  // Método para actualizar un estudiante
   async updateStudent(id, data) {
     try {
       return await Student.findByIdAndUpdate(id, data, { new: true });
@@ -39,7 +35,6 @@ async getAllStudents() {
     }
   }
 
-  // Método para eliminar un estudiante
   async deleteStudent(id) {
     try {
       return await Student.findByIdAndDelete(id);
@@ -48,7 +43,6 @@ async getAllStudents() {
     }
   }
 
-  // Método para hashear la contraseña
   async hashPassword(password) {
     try {
       return await argon2.hash(password);
@@ -57,7 +51,6 @@ async getAllStudents() {
     }
   }
 
-  // Método para verificar la contraseña
   async verifyPassword(enteredPassword, storedPassword) {
     try {
       return await argon2.verify(storedPassword, enteredPassword);
@@ -66,7 +59,6 @@ async getAllStudents() {
     }
   }
 
-  // Método para buscar un estudiante por su ID
   async findStudentById(id) {
     try {
       return await Student.findById(id);
@@ -75,7 +67,6 @@ async getAllStudents() {
     }
   }
 
-  // Método para buscar un maestro por el grado
   async findTeacherByGrade(grade) {
     try {
       return await Teacher.findOne({ grade });

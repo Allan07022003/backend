@@ -22,7 +22,7 @@ const TeacherSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    default: 'teacher', // Asignamos el rol de profesor
+    default: 'teacher', 
   },
   isTemporaryPassword: {
     type: Boolean,
@@ -30,7 +30,6 @@ const TeacherSchema = new mongoose.Schema({
   },
 });
 
-// Método para comparar contraseñas
 TeacherSchema.methods.matchPassword = async function (enteredPassword) {
   return await argon2.verify(this.password, enteredPassword);
 };
