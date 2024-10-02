@@ -50,8 +50,8 @@ class AuthService {
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email.trim(),
-      subject: 'Invitación para unirse como profesor',
-      text: `Use este enlace para registrarse: https://ejemplo/register?token=${token}`,
+      subject: 'Este correo es para que pueda iniciar sesion en este link para poder gestionar la informacion de sus estudiantes asignados',
+      text: `Use este enlace para registrarse: https://montessori-cabrican.vercel.app/login?token=${token}`,
     };
 
     try {
