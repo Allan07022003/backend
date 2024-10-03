@@ -78,8 +78,13 @@ const completeStudentProfile = async (req, res) => {
 };
 
 
-
 const createStudent = async (req, res) => {
+  const { password } = req.body;
+
+  if (password.length < 6) {
+    return res.status(400).json({ message: 'La contraseña debe tener al menos 6 caracteres' });
+  }
+
   try {
     const student = await studentService.createStudent(req.body);
     res.status(201).json(student);
@@ -103,6 +108,9 @@ const updateStudent = async (req, res) => {
     const { password, ...updateData } = req.body; 
 
     if (password) {
+      if (password.length < 6) {
+        return res.status(400).json({ message: 'La contraseña debe tener al menos 6 caracteres' });
+      }
       updateData.password = await studentService.hashPassword(password);
     }
 

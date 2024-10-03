@@ -73,6 +73,9 @@ const registerTeacherWithToken = async (req, res) => {
       return res.status(400).json({ message: 'El profesor ya está registrado' });
     }
 
+    if (password.length < 6) {
+      return res.status(400).json({ message: 'La contraseña debe tener al menos 6 caracteres' });
+    }
     const hashedPassword = await argon2.hash(password);
     const newTeacher = new Teacher({
       name,
@@ -142,6 +145,10 @@ const generateTokenForTeacherRegistration = async (req, res) => {
 
 const changeTemporaryPassword = async (req, res) => {
   const { email, newPassword } = req.body;
+
+  if (newPassword.length < 6) {
+    return res.status(400).json({ message: 'La contraseña debe tener al menos 6 caracteres' });
+  }
 
   const teacher = await Teacher.findOne({ email });
   if (!teacher) {
