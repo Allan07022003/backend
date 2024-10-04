@@ -9,7 +9,8 @@ const {
   updateStudent,
   deleteStudent,
   requestPasswordResetStudent,   
-  resetPasswordStudent           
+  resetPasswordStudent,
+  searchStudents           
 } = require('../controllers/studentController');
 const { protect } = require('../middleware/authMiddleware');
 const Student = require('../models/students');  
@@ -60,6 +61,8 @@ router.get('/profile-status', protect, async (req, res) => {
     res.status(500).json({ message: 'Error al obtener el estado del perfil: ' + error.message });
   }
 });
+
+router.get('/search', protect, searchStudents);
 
 router.post('/create', protect, createStudent);
 

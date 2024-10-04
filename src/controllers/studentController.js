@@ -220,6 +220,27 @@ const resetPasswordStudent = async (req, res) => {
   }
 };
 
+const searchStudents = async (req, res) => {
+  const { query } = req.query; 
+  try {
+    const students = await Student.find({
+      $or: [
+        { firstName: { $regex: query, $options: 'i' } },  
+        { lastName: { $regex: query, $options: 'i' } },   
+        { email: { $regex: query, $options: 'i' } }       
+      ]
+    });
+
+    if (!students.length) {
+      return res.status(404).json({ message: 'No se encontraron estudiantes' });
+    }
+
+    res.status(200).json(students);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al buscar estudiantes: ' + error.message });
+  }
+};
+
 module.exports = {
   registerStudent,
   loginStudent,
@@ -230,5 +251,6 @@ module.exports = {
   createStudent,
   updateStudent,
   deleteStudent,
+  searchStudents
 };
 
