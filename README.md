@@ -39,84 +39,105 @@ Thumbs.db
 dist/
 build/
 
+# La configuración del servidor de envío de correos para la invitaciónrofesor se realiza en el método generateTokenForTeacherRegistration de la clase AuthService. Aquí está el fragmento relevante del código:
 
-# Pruebas para la Creación de un Profesor y Envío de Invitación:
-Generar Token de Registro para el Profesor:
 
-Ruta: POST https://localhost:5000/api/auth/generate-token
-Cuerpo:
-json
 
+# Registro de Profesor con Token
+Ruta: POST /api/auth/register
+Cuerpo
 {
-  "email": "profesor@example.com"
+  "token": "token_de_registro",
+  "email": "profesor@example.com",
+  "password": "contraseña123"
 }
-Resultado esperado: Un correo se envía al profesor con un enlace que contiene un token de registro.
-Registro del Profesor Usando el Token:
+
+# Generar Token para Registro de Profesor
+Ruta: POST /api/auth/generate-token
 
 
-Ruta: POST https://localhost:5000/api/auth/register
-Cuerpo:
-json
-Copiar código
-{
-  "token": "TOKEN_GENERADO",
-  "name": "Juan Pérez",
-  "password": "12345678",
-  "grade": "2nd Grade"
-}
-Resultado esperado: El profesor es registrado y se almacena en la base de datos.
-Inicio de Sesión del Profesor:
+# Resultado esperado: Se genera y envía un token de registro al correo del profesor.
+Cambiar Contraseña Temporal
+Ruta: PUT /api/auth/change-password
+Cuerpo
 
-Ruta: POST https://localhost:5000/api/auth/login
-Cuerpo:
-json
-Copiar código
 {
   "email": "profesor@example.com",
-  "password": "12345678"
+  "newPassword": "nuevaContraseña123"
 }
-Resultado esperado: Se devuelve un token JWT para el profesor.
 
-2. Pruebas para la Creación y Gestión del Estudiante:
-Registro del Estudiante:
+Resultado esperado: La contraseña del profesor se actualiza correctamente.
 
-Ruta: POST https://localhost:5000/api/students/register
-Cuerpo:
-json
-Copiar código
-{
-  "email": "estudiante@example.com",
-  "password": "contraseña123"
-}
-Resultado esperado: El estudiante se registra con solo correo y contraseña.
-Inicio de Sesión del Estudiante:
-
-Ruta: POST https://localhost:5000/api/students/login
-Cuerpo:
-json
-Copiar código
-{
-  "email": "estudiante@example.com",
-  "password": "contraseña123"
-}
-Resultado esperado: Se devuelve un token JWT para el estudiante.
-Completar el Perfil del Estudiante:
-
-Ruta: PUT https://localhost:5000/api/students/complete-profile
+# Completar el Perfil del Estudiante
+Ruta: PUT /api/students/complete-profile
 Headers: Authorization: Bearer <TOKEN_DEL_ESTUDIANTE>
-Cuerpo:
-json
-Copiar código
+Cuerpo
 {
   "name": "Pedro González",
   "age": 7,
   "grade": "2nd Grade"
 }
-Resultado esperado: El perfil del estudiante se completa y se asigna automáticamente al profesor de 2do grado.
-3. Pruebas de Rutas Protegidas:
-Obtener la Lista de Estudiantes (Solo Accesible con Autenticación):
 
-Ruta: GET https://localhost:5000/api/students
+# Resultado esperado: El perfil del estudiante se completa y se asigna automáticamente al profesor de 2do grado.
+Obtener la Lista de Estudiantes
+Ruta: GET /api/students
 Headers: Authorization: Bearer <TOKEN_DEL_PROFESOR>
-Resultado esperado: El profesor puede ver todos los estudiantes registrados bajo su supervisión.
+# Resultado esperado: El profesor puede ver todos los estudiantes registrados bajo su supervisión.
+
+# Profesores
+Obtener la Lista de Profesores
+Ruta: GET /api/teachers
+Headers: Authorization: Bearer <TOKEN_DEL_ADMIN>
+Resultado esperado: El administrador puede ver todos los profesores registrados.
+# Middleware
+Autenticación de Estudiantes
+Archivo: src/middleware/authStudentMiddleware.js
+Función: protectStudent
+Descripción: Protege las rutas que solo pueden ser accedidas por estudiantes autenticados.
+# Autenticación de Profesores
+Archivo: src/middleware/authTeacherMiddleware.js
+Función: protectTeacher
+Descripción: Protege las rutas que solo pueden ser accedidas por profesores autenticados.
+Autenticación General
+Archivo: src/middleware/authMiddleware.js
+# Función: protect
+Descripción: Protege las rutas que pueden ser accedidas tanto por estudiantes como por profesores.
+Servicios
+
+# Servicio de Estudiantes
+Archivo: src/service/studentService.js
+Métodos:
+findStudentByEmail(email): Busca un estudiante por email.
+createStudent(data): Crea un nuevo estudiante.
+getAllStudents(): Obtiene todos los estudiantes.
+updateStudent(id, data): Actualiza un estudiante.
+deleteStudent(id): Elimina un estudiante.
+hashPassword(password): Hashea una contraseña.
+verifyPassword(enteredPassword, storedPassword): Verifica una contraseña.
+findStudentById(id): Busca un estudiante por ID.
+findTeacherByGrade(grade): Busca un profesor por grado.
+
+# Servicio de Profesores
+Archivo: src/service/teacherService.js
+Métodos:
+findTeacherByEmail(email): Busca un profesor por email.
+createTeacher(data): Crea un nuevo profesor.
+getAllTeachers(): Obtiene todos los profesores.
+updateTeacher(id, data): Actualiza un profesor.
+deleteTeacher(id): Elimina un profesor.
+hashPassword(password): Hashea una contraseña.
+verifyPassword(enteredPassword, storedPassword): Verifica una contraseña.
+findTeacherById(id): Busca un profesor por ID.
+
+# Conexión a la Base de Datos
+Archivo: src/config/db.js
+Función: connectDB
+Descripción: Conecta a la base de datos MongoDB.
+
+# Servidor
+Archivo: src/server.js
+Descripción: Configura y levanta el servidor Express.
+
+
+
 
